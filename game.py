@@ -1,3 +1,4 @@
+from os import truncate
 import pygame
 import sys
 import tkinter as tk
@@ -144,11 +145,11 @@ def update_circles():
 
     if not no_note:
         for circle in circles_on_scene[:]:
-
+            print()
             pygame.draw.circle(circle[0], circle[1], (circle[2][0], circle[2][1]), circle[3])
 
             circle[2][1] += circle_speed
-            
+
             if 510 <= circle[2][1] <= 560 and keys[circle[2][2]]:
                 combo += 1
                 perfect_note_hit = True
@@ -226,38 +227,37 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_d:
+            if event.key == pygame.K_d:  
                 keys[0] = True
                 key1_color = white
                 hitsound.play()
-            if event.key == pygame.K_f:
+            if event.key == pygame.K_f:  # Si presiona F y no estaba presionado antes
                 keys[1] = True
                 key2_color = white
                 hitsound.play()
-            if event.key == pygame.K_j:
+            if event.key == pygame.K_j:  # Si presiona J y no estaba presionado antes
                 keys[2] = True
                 key3_color = white
                 hitsound.play()
-            if event.key == pygame.K_k:
+            if event.key == pygame.K_k:  # Si presiona K y no estaba presionado antes
                 keys[3] = True
                 key4_color = white
                 hitsound.play()
-
+        
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_d:
-                keys[0] = False
                 key1_color = grey
             if event.key == pygame.K_f:
-                keys[1] = False
                 key2_color = grey
             if event.key == pygame.K_j:
-                keys[2] = False
                 key3_color = grey
             if event.key == pygame.K_k:
-                keys[3] = False
                 key4_color = grey
-    print(current_time)
+
+            
+
     screen.fill(black)
 
     display_keys()
@@ -283,7 +283,7 @@ while running:
     perfect_note()
     good_note()
     bad_note()
-
+    keys=[False, False, False, False]
     pygame.display.update()
     pygame.time.Clock().tick(120)
 
