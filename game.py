@@ -165,8 +165,9 @@ def update_circles():
                 bad_note_hit=True
                 circles_on_scene.remove(circle)
 
-            elif circle[2][1] >= 1000:
+            elif circle[2][1] >= 650:
                 circles_on_scene.remove(circle)
+                combo=0
     else:
         no_note = False
 

@@ -26,6 +26,7 @@ def seleccionar_imagen():
 # Crear una fuente personalizada
 custom_font = tkFont.Font(family="Helvetica", size=25)
 custom_font2 = tkFont.Font(family="Helvetica", size=25, weight="bold")
+custom_font3 = tkFont.Font(family="Helvetica", size=25, weight="bold")
 
 text = tk.Label(root, text="BEATMAP SELECTOR", font=custom_font2, foreground="blue")
 text.pack()
@@ -73,12 +74,16 @@ button.pack(pady=10)
 seleccionar_imagen_button = tk.Button(root, text="Seleccionar Imagen de perfil", command=seleccionar_imagen)
 seleccionar_imagen_button.pack(pady=10)
 
+# Frame para centrar la imagen y el texto juntos
+centro_frame = tk.Frame(root)
+centro_frame.pack(pady=10)
+
 # Etiqueta para mostrar la imagen seleccionada
-imagen_label = tk.Label(root)
-imagen_label.pack(pady=10)
+imagen_label = tk.Label(centro_frame)
+imagen_label.pack(side="left")
 
 # Etiqueta para mostrar el nombre "melis"
-nombre_label = tk.Label(root, text="1# melis", font=custom_font)
-nombre_label.pack()
+nombre_label = tk.Label(centro_frame, text="1# melis", font=custom_font3)
+nombre_label.pack(side="left")
 
 root.mainloop()
