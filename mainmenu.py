@@ -1,13 +1,9 @@
-import tkinter as tk
-from tkinter import filedialog
-from PIL import Image, ImageTk  # Import Pillow for better image handling
+import customtkinter as ctk
+from tkinter import filedialog, Listbox, Button, FLAT
+from PIL import Image, ImageTk
 import os
 import tkinter.font as tkFont
-
-root = tk.Tk()
-root.title("Beatmap selector")
-root.iconbitmap("data/mania_icon.ico")
-root.geometry("500x500")
+from CTkListbox import *
 
 # Función para seleccionar la imagen
 def seleccionar_imagen():
@@ -16,74 +12,91 @@ def seleccionar_imagen():
     if archivo_imagen:
         try:
             img = Image.open(archivo_imagen)
-            img = img.resize((75, 75), Image.Resampling.LANCZOS)  # Resize the image to fit the label
+            img = img.resize((75, 75), Image.Resampling.LANCZOS)
             pfp = ImageTk.PhotoImage(img)
-            imagen_label.config(image=pfp)
+            imagen_label.configure(image=pfp)
             imagen_label.image = pfp  
         except Exception as e:
             print(f"Error al cargar la imagen: {e}")
 
-# Crear una fuente personalizada
-custom_font = tkFont.Font(family="Helvetica", size=25)
-custom_font2 = tkFont.Font(family="Helvetica", size=25, weight="bold")
-custom_font3 = tkFont.Font(family="Helvetica", size=25, weight="bold")
+# Crear la ventana principal
+ctk.set_appearance_mode("System")  # Modos: "System" (predeterminado), "Dark", "Light"
+ctk.set_default_color_theme("blue")  # Temas: "blue" (predeterminado), "green", "dark-blue"
 
-text = tk.Label(root, text="BEATMAP SELECTOR", font=custom_font2, foreground="blue")
-text.pack()
+root = ctk.CTk()
+root.title("osu! mania lite - Beatmap selector")
+root.iconbitmap("data/mania_icon.ico")
+root.geometry("750x550")
+root.resizable(False, False)
+# Crear una fuente personalizada
+custom_font = ctk.CTkFont(family="Helvetica", size=25)
+custom_font2 = ctk.CTkFont(family="Helvetica", size=25, weight="bold")
+custom_font3 = ctk.CTkFont(family="Helvetica", size=25, weight="bold")
+custom_font4 = ctk.CTkFont(family="Helvetica", size=40, weight="bold")
+
+# Etiqueta de título
+text = ctk.CTkLabel(root, text="BEATMAP SELECTOR", font=custom_font2, text_color="white")
+text.pack(pady=15)
 
 # Ajuste del tamaño del Listbox
-maplist = tk.Listbox(root, width=20, height=5, font=custom_font)
-maplist.pack(pady=10)
+maplist = CTkListbox(root)
+maplist.pack(fill="both", expand=True, padx=10, pady=10)
 
 carpetas = []
 
+# Función para listar las carpetas
 def listar_carpetas(ruta):
     global carpetas
-    if not os.path.isdir(ruta):
-        print(f"La ruta {ruta} no es un directorio válido.")
-        return
 
     try:
         carpetas = [nombre for nombre in os.listdir(ruta) if os.path.isdir(os.path.join(ruta, nombre))]
         if carpetas:
             for carpeta in carpetas:
-                print(carpeta)
-        else:
-            print(f"No se encontraron carpetas en {ruta}.")
+                maplist.insert(ctk.END, carpeta)
     except Exception as e:
         print(f"Error al intentar listar carpetas: {e}")
 
 ruta_carpeta = "beatmaps"
 listar_carpetas(ruta_carpeta)
 
-for carpeta in carpetas:
-    maplist.insert(tk.END, carpeta)
-
 beatmap_selected = ""
 
+# Función para manejar el clic del botón
 def on_button_click():
     global beatmap_selected
     beatmap_selected = maplist.get(maplist.curselection())
     root.destroy()
 
-# Ajuste del tamaño del Button
-button = tk.Button(root, text="PLAY", command=on_button_click, width=20, height=2)
+# Botón para seleccionar el beatmap
+button = ctk.CTkButton(root, text="PLAY", command=on_button_click, width=200, height=40)
 button.pack(pady=10)
 
-# Botón para seleccionar imagen
-seleccionar_imagen_button = tk.Button(root, text="Seleccionar Imagen de perfil", command=seleccionar_imagen)
-seleccionar_imagen_button.pack(pady=10)
+# Botón para seleccionar la imagen de perfil
 
-# Frame para centrar la imagen y el texto juntos
-centro_frame = tk.Frame(root)
+
+centro_frame = ctk.CTkFrame(root)
 centro_frame.pack(pady=10)
 
-# Etiqueta para mostrar la imagen seleccionada
-imagen_label = tk.Label(centro_frame)
+bg_color = centro_frame.cget("fg_color")
+
+# Crear el botón invisible pero con texto visible
+imagen_label = Button(
+    centro_frame,
+    text="",  # Sin texto
+    command=seleccionar_imagen,
+    borderwidth=0,  # Sin borde
+    highlightthickness=0,
+    relief=FLAT  # Sin realce
+)
 imagen_label.pack(side="left")
 
-# Etiqueta para mostrar el nombre "melis"
-nombre_label = tk.Label(centro_frame, text="1# melis", font=custom_font3)
-nombre_label.pack(side="left")
+nombre_label = ctk.CTkLabel(centro_frame, text="melis", font=custom_font3)
+nombre_label.pack(side="left", padx=10)
+
+img = Image.open("data/player_data/def_img.jpg")
+img = img.resize((75, 75), Image.Resampling.LANCZOS)
+pfp = ImageTk.PhotoImage(img)
+imagen_label.configure(image=pfp)
+imagen_label.image = pfp
 
 root.mainloop()

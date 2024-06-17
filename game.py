@@ -3,6 +3,7 @@ import pygame
 import sys
 import tkinter as tk
 from mainmenu import beatmap_selected
+import time
 
 #variables
 
@@ -21,10 +22,11 @@ key2_color = grey
 key3_color = grey
 key4_color = grey
 
-screen_width = 400
+screen_width = 800
 screen_height = 600
+a=400
 
-radius = (screen_width // 8) - 10
+radius = (a // 8) - 10
 
 col1 = [50, -50, 0]
 col2 = [150, -50, 1]
@@ -55,15 +57,21 @@ seconds = []
 circles_on_scene = []
 keys = [False, False, False, False]
 
+durations =[]
 #functions
 
 def set_notes():
     with open(f'beatmaps/{beatmap_selected}/notes.txt', 'r', encoding='utf-8') as file:
-            lineas = file.readlines()
-            for linea in lineas:
-                note = linea.split()
-                seconds.append(float(note[0]))
-                notes.append(int(note[1]))
+        lineas = file.readlines()
+        for linea in lineas:
+            note = linea.split()
+            seconds.append(float(note[0]))
+            notes.append(int(note[1]))
+            if len(note) > 2:
+                durations.append(float(note[2]))
+            else:
+                durations.append(0)  # Si no hay duración especificada, se asume nota regular
+
           
 
 def display_keys():
@@ -147,27 +155,29 @@ def update_circles():
         for circle in circles_on_scene[:]:
             print()
             pygame.draw.circle(circle[0], circle[1], (circle[2][0], circle[2][1]), circle[3])
+            fpscirlcespeed= circle_speed * dt * targetfps
+            circle[2][1] += fpscirlcespeed
 
-            circle[2][1] += circle_speed
+            if circles_on_scene[0] == circle or circles_on_scene[1][2][2] == circle[2][2]:
+                if 510 <= circle[2][1] <= 560 and keys[circle[2][2]]:
+                    combo += 1
+                    perfect_note_hit = True
+                    circles_on_scene.remove(circle)
+                
+                elif 490 <= circle[2][1] <= 580 and keys[circle[2][2]]:
+                    combo += 1
+                    good_note_hit=True
+                    circles_on_scene.remove(circle)
+                
+                elif 470 <= circle[2][1] <= 600 and keys[circle[2][2]]:
+                    combo += 1
+                    bad_note_hit=True
+                    circles_on_scene.remove(circle)
 
-            if 510 <= circle[2][1] <= 560 and keys[circle[2][2]]:
-                combo += 1
-                perfect_note_hit = True
-                circles_on_scene.remove(circle)
-            
-            elif 490 <= circle[2][1] <= 580 and keys[circle[2][2]]:
-                combo += 1
-                good_note_hit=True
-                circles_on_scene.remove(circle)
-            
-            elif 470 <= circle[2][1] <= 600 and keys[circle[2][2]]:
-                combo += 1
-                bad_note_hit=True
-                circles_on_scene.remove(circle)
+                elif circle[2][1] > 600:
+                    combo=0
+                    circles_on_scene.remove(circle)
 
-            elif circle[2][1] >= 650:
-                circles_on_scene.remove(circle)
-                combo=0
     else:
         no_note = False
 
@@ -180,7 +190,7 @@ def song_timing():
     global song_timed
 
     if not song_timed:
-        if current_time >= (580/(circle_speed*120)):
+        if current_time >= (580/((circle_speed)*120)):
             pygame.mixer.music.play()
             song_timed = True
 
@@ -222,9 +232,21 @@ set_notes()
 seconds_set = 0
 
 create = 0
+clock = pygame.time.Clock()
+
+fps = 120
+targetfps = 120
+
+prev_time = time.time()
+dt = 0
 
 running = True
 while running:
+
+    clock.tick(fps)
+    now=time.time()
+    dt=now-prev_time
+    prev_time = now
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -261,6 +283,7 @@ while running:
 
     screen.fill(black)
 
+
     display_keys()
 
     counter()
@@ -285,8 +308,8 @@ while running:
     good_note()
     bad_note()
     keys=[False, False, False, False]
+    
     pygame.display.update()
-    pygame.time.Clock().tick(120)
 
 pygame.quit()
 sys.exit()
