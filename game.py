@@ -22,8 +22,8 @@ key2_color = grey
 key3_color = grey
 key4_color = grey
 
-screen_width = 800
-screen_height = 600
+screen_width = 400
+screen_height = 650
 a=400
 
 radius = (a // 8) - 10
@@ -144,42 +144,46 @@ def bad_note():
             bad_timer = 0
 circle_speed = 10
 def update_circles():
-
     global combo
     global perfect_note_hit
     global good_note_hit
     global bad_note_hit
     global no_note
 
+    hit_detected = [False] * 4  # Bandera para detectar si una nota fue golpeada para cada columna
+
     if not no_note:
         for circle in circles_on_scene[:]:
-            print()
             pygame.draw.circle(circle[0], circle[1], (circle[2][0], circle[2][1]), circle[3])
-            fpscirlcespeed= circle_speed * dt * targetfps
+            fpscirlcespeed = circle_speed * dt * targetfps
             circle[2][1] += fpscirlcespeed
 
-            if circles_on_scene[0] == circle or circles_on_scene[1][2][2] == circle[2][2]:
-                if 510 <= circle[2][1] <= 560 and keys[circle[2][2]]:
-                    combo += 1
-                    perfect_note_hit = True
-                    circles_on_scene.remove(circle)
-                
-                elif 490 <= circle[2][1] <= 580 and keys[circle[2][2]]:
-                    combo += 1
-                    good_note_hit=True
-                    circles_on_scene.remove(circle)
-                
-                elif 470 <= circle[2][1] <= 600 and keys[circle[2][2]]:
-                    combo += 1
-                    bad_note_hit=True
-                    circles_on_scene.remove(circle)
+            if 470 <= circle[2][1] <= 600 and keys[circle[2][2]] and not hit_detected[circle[2][2]]:
+                combo += 1
+                perfect_note_hit = True
+                circles_on_scene.remove(circle)
+                hit_detected[circle[2][2]] = True  # Marcar que una nota fue golpeada en esta columna
+            
+            elif 430 <= circle[2][1] <= 640 and keys[circle[2][2]] and not hit_detected[circle[2][2]]:
+                combo += 1
+                good_note_hit = True
+                circles_on_scene.remove(circle)
+                hit_detected[circle[2][2]] = True  # Marcar que una nota fue golpeada en esta columna
+            
+            elif 390 <= circle[2][1] <= 680 and keys[circle[2][2]] and not hit_detected[circle[2][2]]:
+                combo += 1
+                bad_note_hit = True
+                circles_on_scene.remove(circle)
+                hit_detected[circle[2][2]] = True  # Marcar que una nota fue golpeada en esta columna
 
-                elif circle[2][1] > 600:
-                    combo=0
-                    circles_on_scene.remove(circle)
+            elif circle[2][1] > 680:
+                combo = 0
+                circles_on_scene.remove(circle)
 
     else:
         no_note = False
+
+
 
 time_for_timing = 0
 song_timed = False
