@@ -22,11 +22,18 @@ key2_color = grey
 key3_color = grey
 key4_color = grey
 
-screen_width = 400
-screen_height = 650
-a=400
+def obtener_resolucion():
+    pygame.init()
+    info_pantalla = pygame.display.Info()
+    ancho = info_pantalla.current_w
+    alto = info_pantalla.current_h
+    pygame.quit()
+    return ancho, alto
+ancho, alto = obtener_resolucion()
 
-radius = (a // 8) - 10
+screen_width = ancho//4
+screen_height = alto//1.2
+radius = (screen_width // 8) - 10
 
 col1 = [50, -50, 0]
 col2 = [150, -50, 1]
@@ -142,7 +149,7 @@ def bad_note():
         if bad_timer >= 5:
             bad_note_hit = False
             bad_timer = 0
-circle_speed = 10
+circle_speed = 2
 def update_circles():
     global combo
     global perfect_note_hit
@@ -194,7 +201,7 @@ def song_timing():
     global song_timed
 
     if not song_timed:
-        if current_time >= (580/((circle_speed)*120)):
+        if current_time >= (580/((circle_speed)*540)):
             pygame.mixer.music.play()
             song_timed = True
 
@@ -239,7 +246,7 @@ create = 0
 clock = pygame.time.Clock()
 
 fps = 120
-targetfps = 120
+targetfps = 540
 
 prev_time = time.time()
 dt = 0
@@ -247,7 +254,6 @@ dt = 0
 running = True
 while running:
 
-    clock.tick(fps)
     now=time.time()
     dt=now-prev_time
     prev_time = now
@@ -302,7 +308,6 @@ while running:
             while seconds_set < len(seconds) and seconds[seconds_set] == seconds[seconds_set - 1]:
                 create_circle()
                 seconds_set += 1
-
     update_circles()
     combo_text = font1.render(f'{combo}', True, yellow)
     text_rect = combo_text.get_rect(center=(screen_width / 2, screen_height / 2))
@@ -314,6 +319,6 @@ while running:
     keys=[False, False, False, False]
     
     pygame.display.update()
-
+    clock.tick(fps)
 pygame.quit()
 sys.exit()
